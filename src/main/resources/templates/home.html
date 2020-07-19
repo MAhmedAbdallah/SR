@@ -28,6 +28,8 @@
                             <body style="    overflow-x: hidden; /* Hide horizontal scrollbar */
                                   ">
 
+                               <!--<label th:text="'Hello' + ${session.userName}"></label>-->
+
 
 
 
@@ -181,11 +183,14 @@
                                 <!--___________________________________________________________________________________________________________________-->
 
 
-                                <form class="needs-validation" id="port" style="display: none">
+                                <form  
+                                    
+                                    th:action="@{/portout}" method="post"  enctype="multipart/form-data"
+                                    class="needs-validation" id="port" style="display: none">
                                     <div class="form-row align-items-center d-flex justify-content-center" >
                                         <div class="col-sm-3 my-1">
 
-                                            <input type="file" class="custom-file-input " id="inputGroupFile02"  required>
+                                            <input type="file" class="custom-file-input " id="inputGroupFile02"  name="csv" required>
                                                 <label class="custom-file-label" for="inputGroupFile02">Choose file</label>
                                         </div>
                                         <!-- 
