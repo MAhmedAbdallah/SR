@@ -62,9 +62,9 @@
                                             class="table table-sm  text-center">
                                             <thead>
                                                 <tr>
-                                                    <th scope="col">MSI</th>
-                                                    <th scope="col">Destination</th>
-                                                    <th scope="col">Response</th>
+                                                    <th scope="col">CO ID</th>
+                                                    <th scope="col">Status</th>
+                                                   
 
                                                     <th>
 
@@ -76,13 +76,13 @@
                                             <tbody>
 
 
-                                                <th:block th:each="content : ${consoleContent}" >
+                                                <th:block th:each="content : ${consoleContentCancelContract}" >
 
                                                     <tr>
 
-                                                        <td th:text="${content.msi}">A Smoke Test'</td>
-                                                        <td th:text="${content.DestinationOperator}">A Smoke Test'</td>
-                                                        <td th:text="${content.ServiceResponse}">A Smoke Test'</td>
+                                                        <td th:text="${content.coId}">A Smoke Test'</td>
+                                                        <td th:text="${content.response}">A Smoke Test'</td>
+                                                       
 
                                                     </tr> 
                                                 </th:block>

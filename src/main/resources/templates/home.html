@@ -28,7 +28,7 @@
                             <body style="    overflow-x: hidden; /* Hide horizontal scrollbar */
                                   ">
 
-                               <!--<label th:text="'Hello' + ${session.userName}"></label>-->
+                                <!--<label th:text="'Hello' + ${session.userName}"></label>-->
 
 
 
@@ -89,6 +89,14 @@
                                                 <option value="port">Port Out Bulk</option>
                                                 <option value="service">Service OnHold</option>
                                                 <option value="contract">Contract OnHold</option>
+                                                <option value="cancelcontract">Cancel Contract</option>
+                                                <option value="cancelcontractbulk">Cancel Contract Bulk</option>
+                                                
+
+                                                <option value="cancelrequest">Cancel Request</option> 
+                                                 <option value="cancelrequestbulk">Cancel Request Bulk</option> 
+                                                <option value="deactiveService">Deactivate Service</option> 
+                                                <option value="deactiveServicebulk">Deactivate Service Bulk</option> 
                                             </select>
                                             <div class="invalid-feedback">Example invalid custom select feedback</div>
                                         </div>
@@ -184,7 +192,7 @@
 
 
                                 <form  
-                                    
+
                                     th:action="@{/portout}" method="post"  enctype="multipart/form-data"
                                     class="needs-validation" id="port" style="display: none">
                                     <div class="form-row align-items-center d-flex justify-content-center" >
@@ -225,6 +233,111 @@
 
 
 
+                                <!--___________________________________________________________________________________________________-->
+
+
+
+
+                                <form th:action="@{/cancelContract}" method="post"
+                                      class="needs-validation" id="cancelcontract" style="display: none">
+                                    <div class="form-row align-items-center d-flex justify-content-center" >
+                                        <div class="col-sm-3 my-1">
+
+                                            <input type="text" class="form-control" id="coID" name="coID" placeholder="Please Enter CO ID"  required>
+                                                <!--<label class="form-controll" for="msiId">Msi</label>-->
+                                        </div>
+                                        <!-- 
+                                                To make drop down menu in future  
+                                                
+                                                
+                                                
+                                                <div class="col-sm-3 my-1">
+                                                <label class="sr-only" for="inlineFormInputGroupUsername">Username</label>
+                                                <div class="input-group">
+                                                  <div class="input-group-prepend">
+                                                    <div class="input-group-text">@</div>
+                                                  </div>
+                                                  <input type="text" class="form-control" id="inlineFormInputGroupUsername" placeholder="Username">
+                                                </div>
+                                              </div>
+                                            
+                                            
+                                            
+                                        -->
+
+
+
+                                        <div class="col-auto my-1">
+                                            <button type="submit" class="btn btn-danger">Submit</button>
+                                        </div>
+                                    </div>
+                                </form>
+                                <!--_________________________________________________________________________-->
+
+
+
+
+                                <form th:action="@{/cancelRequest}" method="post"
+                                      class="needs-validation" id="cancelrequest" style="display: none">
+                                    <div class="form-row align-items-center d-flex justify-content-center" >
+                                        <div class="col-sm-3 my-1">
+
+                                            <input type="text" class="form-control" id="reqId" name="reqId" placeholder="Please Enter Request ID"  required>
+                                                <!--<label class="form-controll" for="msiId">Msi</label>-->
+                                        </div>
+                                        <!-- 
+                                                To make drop down menu in future  
+                                                
+                                                
+                                                
+                                                <div class="col-sm-3 my-1">
+                                                <label class="sr-only" for="inlineFormInputGroupUsername">Username</label>
+                                                <div class="input-group">
+                                                  <div class="input-group-prepend">
+                                                    <div class="input-group-text">@</div>
+                                                  </div>
+                                                  <input type="text" class="form-control" id="inlineFormInputGroupUsername" placeholder="Username">
+                                                </div>
+                                              </div>
+                                            
+                                            
+                                            
+                                        -->
+
+
+
+                                        <div class="col-auto my-1">
+                                            <button type="submit" class="btn btn-danger">Submit</button>
+                                        </div>
+                                    </div>
+                                </form>
+
+                                <!--_________________________________________________________________________-->
+
+
+
+
+                                <form th:action="@{/deactiveService}" method="post"  class="needs-validation" id="deactiveService" style="display: none">
+                                    <div class="form-row align-items-center d-flex justify-content-center" >
+                                        <div class="col-sm-3 my-1">
+
+                                            <input type="text" class="form-control" id="coId" name="coId" placeholder="Please Enter Co ID"  required>
+                                                <!--<label class="form-controll" for="msiId">Msi</label>-->
+                                        </div>
+                                        <div class="col-sm-3 my-1">
+
+                                            <input type="text" class="form-control" id="snCode" name="snCode" placeholder="Please Enter SN Code"  required>
+                                                <!--<label class="form-controll" for="msiId">Msi</label>-->
+                                        </div>
+
+
+
+
+                                        <div class="col-auto my-1">
+                                            <button type="submit" class="btn btn-danger">Submit</button>
+                                        </div>
+                                    </div>
+                                </form>
 
 
 
@@ -242,6 +355,212 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+                                <!--___________________________________________________________________________________________________________________-->
+
+
+                                <form  
+
+                                    th:action="@{/cancelContractBulk}" method="post"  enctype="multipart/form-data"
+                                    class="needs-validation" id="cancelcontractbulk" style="display: none">
+                                    <div class="form-row align-items-center d-flex justify-content-center" >
+                                        <div class="col-sm-3 my-1">
+
+                                            <input type="file" class="custom-file-input " id="inputGroupFile02"  name="csv" required>
+                                                <label class="custom-file-label" for="inputGroupFile02">Choose file</label>
+                                        </div>
+                                        <!-- 
+                                                To make drop down menu in future  
+                                                
+                                                
+                                                
+                                                <div class="col-sm-3 my-1">
+                                                <label class="sr-only" for="inlineFormInputGroupUsername">Username</label>
+                                                <div class="input-group">
+                                                  <div class="input-group-prepend">
+                                                    <div class="input-group-text">@</div>
+                                                  </div>
+                                                  <input type="text" class="form-control" id="inlineFormInputGroupUsername" placeholder="Username">
+                                                </div>
+                                              </div>
+                                            
+                                            
+                                            
+                                        -->
+
+
+
+                                        <div class="col-auto my-1">
+                                            <button type="submit" class="btn btn-danger">Submit</button>
+                                        </div>
+                                    </div>
+                                </form>
+
+
+
+
+
+
+                                <!--___________________________________________________________________________________________________-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+ <!--___________________________________________________________________________________________________________________-->
+
+
+                                <form  
+
+                                    th:action="@{/cancelRequestBulk}" method="post"  enctype="multipart/form-data"
+                                    class="needs-validation" id="cancelrequestbulk" style="display: none">
+                                    <div class="form-row align-items-center d-flex justify-content-center" >
+                                        <div class="col-sm-3 my-1">
+
+                                            <input type="file" class="custom-file-input " id="inputGroupFile02"  name="csv" required>
+                                                <label class="custom-file-label" for="inputGroupFile02">Choose file</label>
+                                        </div>
+                                        <!-- 
+                                                To make drop down menu in future  
+                                                
+                                                
+                                                
+                                                <div class="col-sm-3 my-1">
+                                                <label class="sr-only" for="inlineFormInputGroupUsername">Username</label>
+                                                <div class="input-group">
+                                                  <div class="input-group-prepend">
+                                                    <div class="input-group-text">@</div>
+                                                  </div>
+                                                  <input type="text" class="form-control" id="inlineFormInputGroupUsername" placeholder="Username">
+                                                </div>
+                                              </div>
+                                            
+                                            
+                                            
+                                        -->
+
+
+
+                                        <div class="col-auto my-1">
+                                            <button type="submit" class="btn btn-danger">Submit</button>
+                                        </div>
+                                    </div>
+                                </form>
+
+
+
+
+
+
+                                <!--___________________________________________________________________________________________________-->
+                                
+                                
+
+
+
+
+
+
+
+ <!--___________________________________________________________________________________________________________________-->
+
+
+                                <form  
+
+                                    th:action="@{/deactivateServiceBulk}" method="post"  enctype="multipart/form-data"
+                                    class="needs-validation" id="deactiveServicebulk" style="display: none">
+                                    <div class="form-row align-items-center d-flex justify-content-center" >
+                                        <div class="col-sm-3 my-1">
+
+                                            <input type="file" class="custom-file-input " id="inputGroupFile02"  name="csv" required>
+                                                <label class="custom-file-label" for="inputGroupFile02">Choose file</label>
+                                        </div>
+                                        <!-- 
+                                                To make drop down menu in future  
+                                                
+                                                
+                                                
+                                                <div class="col-sm-3 my-1">
+                                                <label class="sr-only" for="inlineFormInputGroupUsername">Username</label>
+                                                <div class="input-group">
+                                                  <div class="input-group-prepend">
+                                                    <div class="input-group-text">@</div>
+                                                  </div>
+                                                  <input type="text" class="form-control" id="inlineFormInputGroupUsername" placeholder="Username">
+                                                </div>
+                                              </div>
+                                            
+                                            
+                                            
+                                        -->
+
+
+
+                                        <div class="col-auto my-1">
+                                            <button type="submit" class="btn btn-danger">Submit</button>
+                                        </div>
+                                    </div>
+                                </form>
+
+
+
+
+
+
+                                <!--___________________________________________________________________________________________________-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                <!--___________________________________Message in home______________________________________-->
+
+                                <div class="col-md-6 mx-auto p-0 ">
+                                    <!--                                    <div class="col-sm-3 my-1">-->
+
+                                    <div class="alert alert-primary" role="alert" th:if="${responseMessage != null}" th:text="${responseMessage}">
+                                        This is a primary alert—check it out!
+                                    </div>
+
+
+
+                                    <!--</div>-->
+
+
+
+
+
+                                </div>
 
 
 
@@ -293,8 +612,8 @@
                                         var opt;
                                         for (var i = 0, len = sel.options.length; i < len; i++) {
                                             opt = sel.options[i];
-                                            if(i>0){
-                                            document.getElementById(opt.value).style.cssText = "display: none;";
+                                            if (i > 0) {
+                                                document.getElementById(opt.value).style.cssText = "display: none;";
                                             }
 
                                         }
