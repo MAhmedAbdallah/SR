@@ -45,6 +45,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -58,6 +59,11 @@ public class MainController {
 
     @Autowired
     private HttpServletRequest request;
+
+    @GetMapping(value = "/error")
+    public String error() {
+        return "error";
+    }
 
     @RequestMapping("home")
     public String getHome() {
@@ -217,26 +223,28 @@ public class MainController {
 
     @RequestMapping(value = "cancelContract", method = RequestMethod.POST)
     public String cancelContract(@RequestParam String coID) {
+        synchronized (this) {
+            // System.out.println(coID);
+            if (request.getSession().getAttribute("userName") == null) {
+                request.setAttribute("message", "Please Login ");
+                return "index";
+            } else {
 
-        // System.out.println(coID);
-        if (request.getSession().getAttribute("userName") == null) {
-            request.setAttribute("message", "Please Login ");
-            return "index";
-        } else {
+                String response = "";
 
-            String response = "";
+                String Url = "http://10.230.91.39:7001/CMS_HTTP_TEST/DoSimpleRequest?username=TEBCO&password=SY&workflowName=CancelContract&CO_ID=" + coID;
+                try {
+                    response = invokeWebService(Url);
+                    request.setAttribute("responseMessage", response);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    logger.error("Error Happend " + e.getMessage());
+                }
 
-            String Url = "http://10.230.91.39:7001/CMS_HTTP_TEST/DoSimpleRequest?username=TEBCO&password=SY&workflowName=CancelContract&CO_ID=" + coID;
-//        try {
-            response = "Contract Canceled"; // invokeWebService(Url);
-            request.setAttribute("responseMessage", response);
-//        } catch (IOException ex) {
-//            java.util.logging.Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
-//        }
+                return "home";
+            }
 
-            return "home";
         }
-
     }
 
     @RequestMapping(value = "cancelContractBulk", method = RequestMethod.POST)
@@ -266,7 +274,7 @@ public class MainController {
 
                         String Url = "http://10.230.91.39:7001/CMS_HTTP_TEST/DoSimpleRequest?username=TEBCO&password=SY&workflowName=CancelContract&CO_ID=" + list.get(i);
 //        try {
-                        String response = "Contract Canceled"; // invokeWebService(Url);
+                        String response = invokeWebService(Url); //"Contract Canceled";
                         //request.setAttribute("responseMessage", response);
                         cancelContractModal cCM = new cancelContractModal(list.get(i), response);
                         consoleList.add(cCM);
@@ -280,7 +288,7 @@ public class MainController {
                     e.printStackTrace();
                     logger.error("Error Happend " + e.getMessage());
                 }
-                request.setAttribute("consoleContent", consoleList);
+                //    request.setAttribute("consoleContent", consoleList);
 
                 return "forward:/consoleContract";
             }
@@ -290,26 +298,28 @@ public class MainController {
 
     @RequestMapping(value = "cancelRequest", method = RequestMethod.POST)
     public String cancelRequest(@RequestParam String reqId) {
+        synchronized (this) {
+            // System.out.println(coID);
+            if (request.getSession().getAttribute("userName") == null) {
+                request.setAttribute("message", "Please Login ");
+                return "index";
+            } else {
 
-        // System.out.println(coID);
-        if (request.getSession().getAttribute("userName") == null) {
-            request.setAttribute("message", "Please Login ");
-            return "index";
-        } else {
+                String response = "";
 
-            String response = "";
+                String Url = "http://10.230.91.39:7001/CMS_HTTP_TEST/DoSimpleRequest?username=TEBCO%20%20%20%20%20&password=SY&workflowName=RequestsCancel&RE_REQUEST_LIST=" + reqId;
+                try {
+                    response = invokeWebService(Url); //"Request Canceled";
+                    request.setAttribute("responseMessage", response);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    logger.error("Error Happend " + e.getMessage());
+                }
 
-            String Url = "http://10.230.91.39:7001/CMS_HTTP_TEST/DoSimpleRequest?username=TEBCO%20%20%20%20%20&password=SY&workflowName=RequestsCancel&RE_REQUEST_LIST=" + reqId;
-//        try {
-            response = "Request Canceled"; // invokeWebService(Url);
-            request.setAttribute("responseMessage", response);
-//        } catch (IOException ex) {
-//            java.util.logging.Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
-//        }
+                return "home";
+            }
 
-            return "home";
         }
-
     }
 
     @RequestMapping(value = "cancelRequestBulk", method = RequestMethod.POST)
@@ -338,12 +348,12 @@ public class MainController {
                         System.err.println(list.get(i));
 
                         String Url = "http://10.230.91.39:7001/CMS_HTTP_TEST/DoSimpleRequest?username=TEBCO%20%20%20%20%20&password=SY&workflowName=RequestsCancel&RE_REQUEST_LIST=" + list.get(i);
-//        try {
-                        String response = "Contract Canceled"; // invokeWebService(Url);
+                        //     try {
+                        String response = invokeWebService(Url); //"Contract Canceled";
                         //request.setAttribute("responseMessage", response);
                         cancelContractModal cCM = new cancelContractModal(list.get(i), response);
                         consoleList.add(cCM);
-//        } catch (IOException ex) {
+//       } catch (IOException ex) {
 //            java.util.logging.Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);         
 
                     }
@@ -353,7 +363,7 @@ public class MainController {
                     e.printStackTrace();
                     logger.error("Error Happend " + e.getMessage());
                 }
-                request.setAttribute("consoleContent", consoleList);
+                //  request.setAttribute("consoleContent", consoleList);
 
                 return "forward:/consoleRequest";
             }
@@ -363,25 +373,27 @@ public class MainController {
     @RequestMapping(value = "deactiveService", method = RequestMethod.POST)
     public String deactiveSerice(@RequestParam String coId, @RequestParam String snCode) {
 
-        // System.out.println(coID);
-        if (request.getSession().getAttribute("userName") == null) {
-            request.setAttribute("message", "Please Login ");
-            return "index";
-        } else {
+        synchronized (this) {
+            // System.out.println(coID);
+            if (request.getSession().getAttribute("userName") == null) {
+                request.setAttribute("message", "Please Login ");
+                return "index";
+            } else {
 
-            String response = "";
+                String response = "";
 
-            String Url = "http://10.230.91.39:7001/CMS_HTTP_TEST/DoSimpleRequest?username=TEBCO&password=SY&workflowName=WriteCustomerContractServicesSimpleDN&CO_ID=" + coId + "&COS_PENDING_STATUS=4&SNCODE=" + snCode;
-            try {
-                response = invokeWebService(Url); //  "Service Deactivated";
-                request.setAttribute("responseMessage", response);
-            } catch (IOException ex) {
-                java.util.logging.Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
+                String Url = "http://10.230.91.39:7001/CMS_HTTP_TEST/DoSimpleRequest?username=TEBCO&password=SY&workflowName=WriteCustomerContractServicesSimpleDN&CO_ID=" + coId + "&COS_PENDING_STATUS=4&SNCODE=" + snCode;
+                try {
+                    response = invokeWebService(Url); //  "Service Deactivated";
+                    request.setAttribute("responseMessage", response);
+                } catch (Exception e) {
+                    logger.error("Error Happend " + e.getMessage());
+                }
+
+                return "home";
             }
 
-            return "home";
         }
-
     }
 
     @RequestMapping(value = "deactivateServiceBulk", method = RequestMethod.POST)
@@ -410,17 +422,15 @@ public class MainController {
                         String Url = "http://10.230.91.39:7001/CMS_HTTP_TEST/DoSimpleRequest?username=TEBCO&password=SY&workflowName=WriteCustomerContractServicesSimpleDN&CO_ID="
                                 + list.get(i) + "&COS_PENDING_STATUS=4&SNCODE=" + list.get(i + 1);
 //       try {
-                        String response =  invokeWebService(Url); //"Contract Canceled"; //
+                        String response = invokeWebService(Url); //"Contract Canceled"; //
                         //request.setAttribute("responseMessage", response);
                         DeactivateServiceModal dsM = new DeactivateServiceModal(list.get(i), list.get(i + 1), response);
                         consoleList.add(dsM);
-        } 
+                    }
 //       catch (IOException ex) {
 //            java.util.logging.Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);         
 
-                    }
-
-                 catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                     logger.error("Error Happend " + e.getMessage());
                 }
