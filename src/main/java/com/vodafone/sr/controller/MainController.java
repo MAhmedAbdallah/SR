@@ -7,7 +7,9 @@ package com.vodafone.sr.controller;
 
 import com.vodafone.sr.model.DeactivateServiceModal;
 import com.vodafone.sr.model.PortModel;
+import com.vodafone.sr.model.Service;
 import com.vodafone.sr.model.cancelContractModal;
+import com.vodafone.sr.util.DataBase;
 import java.io.BufferedReader;
 import javax.servlet.http.HttpServletRequest;
 
@@ -46,6 +48,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -371,7 +374,7 @@ public class MainController {
     }
 
     @RequestMapping(value = "deactiveService", method = RequestMethod.POST)
-    public String deactiveSerice(@RequestParam String coId, @RequestParam String snCode) {
+    public String deactiveService(@RequestParam String coId, @RequestParam String snCode) {
 
         synchronized (this) {
             // System.out.println(coID);
@@ -441,6 +444,156 @@ public class MainController {
         }
     }
 
+    @RequestMapping(method = RequestMethod.POST, value = "serviceOnHold")
+    public String serviceOnHold(@RequestParam String msi) {
+        List<DeactivateServiceModal> consoleList = new ArrayList<>();
+
+        String response = "";
+        String coId = DataBase.getCoId(msi);
+        if (!DataBase.checkPendingRequest(coId)) {
+            List<Service> serviceList = DataBase.getAllServices(coId);
+            for (Service s : serviceList) {
+                if (s.getStatus().charAt(0) == 'O' || s.getStatus().charAt(0) == 'O') {
+                    System.out.println(s.getSNCode());
+                    try {
+                        String url = "http://10.230.91.39:7001/CMS_HTTP_TEST/DoSimpleRequest?"
+                                + "username=TEBCO&password=SY&workflowName=WriteCustomerContractServicesSimpleDN&CO_ID=" + coId + "&COS_PENDING_STATUS=4&SNCODE=" + s.getSNCode();
+                        response = invokeWebService(url);
+                        DeactivateServiceModal dsm = new DeactivateServiceModal(coId, s.getSNCode(), response);
+                        consoleList.add(dsm);
+                    } catch (Exception e) {
+                        logger.error("Error Happend " + e.getMessage());
+                    }
+
+                }
+            }
+            request.setAttribute("consoleContentDeactivateService", consoleList);
+            return "forward:/consoleDeactivateService";
+        } else {
+            request.setAttribute("responseMessage", " The number you entered has no onhold services");
+
+            return "forward:/home";
+        }
+
+    }
+
+    @RequestMapping(value = "activeService", method = RequestMethod.POST)
+    public String activeService(@RequestParam String coId, @RequestParam String snCode) {
+
+        synchronized (this) {
+            // System.out.println(coID);
+            if (request.getSession().getAttribute("userName") == null) {
+                request.setAttribute("message", "Please Login ");
+                return "index";
+            } else {
+
+                String response = "";
+
+                String Url = "http://10.230.91.39:7001/CMS_HTTP_TEST/DoSimpleRequest?username=TEBCO&password=SY&workflowName=WriteCustomerContractServicesSimpleDN&CO_ID=" + coId + "&COS_PENDING_STATUS=2&SNCODE=" + snCode;
+                try {
+                    response = invokeWebService(Url); //  "Service Deactivated";
+                    request.setAttribute("responseMessage", response);
+                } catch (Exception e) {
+                    logger.error("Error Happend " + e.getMessage());
+                }
+
+                return "home";
+            }
+
+        }
+    }
+
+    @RequestMapping(value = "activateServiceBulk", method = RequestMethod.POST)
+    public String activateServiceBulk(@RequestParam MultipartFile csv) {
+        synchronized (this) {
+            // System.out.println(coID);
+            if (request.getSession().getAttribute("userName") == null) {
+                request.setAttribute("message", "Please Login ");
+                return "index";
+            } else {
+                //   String msi = "";
+                List<DeactivateServiceModal> consoleList = new ArrayList<DeactivateServiceModal>();
+                //  try {
+                //      System.out.println(csv.getName());
+                // File f = new File("C:\\Users\\V19MFoda\\Desktop\\yara.xlsx");
+
+                try {
+                    List<String> list = new ArrayList<String>();
+                    FileInputStream fis = (FileInputStream) csv.getInputStream();//new FileInputStream(csv);   //obtaining bytes from the file  
+
+                    list = readExcel(fis);
+                    for (int i = 0; i < list.size(); i = i + 2) {
+                        System.err.println(list.get(i) + "         " + list.get(i + 1));
+                        //  System.err.println(list.get(i));
+
+                        String Url = "http://10.230.91.39:7001/CMS_HTTP_TEST/DoSimpleRequest?username=TEBCO&password=SY&workflowName=WriteCustomerContractServicesSimpleDN&CO_ID="
+                                + list.get(i) + "&COS_PENDING_STATUS=2&SNCODE=" + list.get(i + 1);
+//       try {
+                        String response = invokeWebService(Url); //"Contract Canceled"; //
+                        //request.setAttribute("responseMessage", response);
+                        DeactivateServiceModal dsM = new DeactivateServiceModal(list.get(i), list.get(i + 1), response);
+                        consoleList.add(dsM);
+                    }
+//       catch (IOException ex) {
+//            java.util.logging.Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);         
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    logger.error("Error Happend " + e.getMessage());
+                }
+                request.setAttribute("consoleContentDeactivateService", consoleList);
+
+                return "forward:/consoleDeactivateService";
+            }
+        }
+    }
+
+//    _________________________________Testing____________________________________________________________________________
+    @RequestMapping(method = RequestMethod.POST, value = "serviceOnHoldBulk")
+    public String serviceOnHoldBulk(@RequestParam MultipartFile csv) {
+        List<DeactivateServiceModal> consoleList = new ArrayList<>();
+        List<String> numbersList = new ArrayList<String>();
+        try {
+
+            FileInputStream fis = (FileInputStream) csv.getInputStream();//new FileInputStream(csv);   //obtaining bytes from the file
+
+            numbersList = readExcel(fis);
+            List<List<DeactivateServiceModal>> bigConsoleList = new ArrayList<>();
+
+            String response = "";
+            for (String number : numbersList) {
+                String coId = DataBase.getCoId(number);
+                if (!DataBase.checkPendingRequest(coId)) {
+                    List<Service> serviceList = DataBase.getAllServices(coId);
+                    for (Service s : serviceList) {
+                        if (s.getStatus().charAt(0) == 'O' || s.getStatus().charAt(0) == 'O') {
+                            System.out.println(s.getSNCode());
+                            try {
+                                String url = "http://10.230.91.39:7001/CMS_HTTP_TEST/DoSimpleRequest?"
+                                        + "username=TEBCO&password=SY&workflowName=WriteCustomerContractServicesSimpleDN&CO_ID=" + coId + "&COS_PENDING_STATUS=4&SNCODE=" + s.getSNCode();
+                                response = invokeWebService(url);
+                                DeactivateServiceModal dsm = new DeactivateServiceModal(coId, s.getSNCode(), response);
+                                consoleList.add(dsm);
+                                bigConsoleList.add(consoleList);
+                            } catch (Exception e) {
+                                logger.error("Error Happend " + e.getMessage());
+                            }
+
+                        }
+                    }
+                }
+            }
+
+            request.setAttribute("consoleContentDeactivateServicebulk", bigConsoleList);
+        } catch (Exception ex) {
+          logger.error("Error Happened "+ex);
+        }
+                    return "forward:/consoleDeactivateService";
+
+    }
+
+
+//    _________________________________Helping Methods____________________________________________________________________________
     private List readExcel(FileInputStream fis) throws IOException {
         synchronized (this) {
             String msi = "";

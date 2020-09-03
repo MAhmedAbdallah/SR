@@ -88,15 +88,21 @@
                                                 <option value="">Open this select menu</option>
                                                 <option value="port">Port Out Bulk</option>
                                                 <option value="service">Service OnHold</option>
-                                                <option value="contract">Contract OnHold</option>
+                                                <option value="serviceBulk">Service OnHold Bulk</option>
+
+                                                <!--<option value="contract">Contract OnHold</option>-->
                                                 <option value="cancelcontract">Cancel Contract</option>
                                                 <option value="cancelcontractbulk">Cancel Contract Bulk</option>
-                                                
+
 
                                                 <option value="cancelrequest">Cancel Request</option> 
-                                                 <option value="cancelrequestbulk">Cancel Request Bulk</option> 
+                                                <option value="cancelrequestbulk">Cancel Request Bulk</option> 
                                                 <option value="deactiveService">Deactivate Service</option> 
                                                 <option value="deactiveServicebulk">Deactivate Service Bulk</option> 
+                                                <option value="activeService">Activate Service</option> 
+                                                <option value="activeServicebulk">Activate Service Bulk</option> 
+
+
                                             </select>
                                             <div class="invalid-feedback">Example invalid custom select feedback</div>
                                         </div>
@@ -110,11 +116,11 @@
 
 
 
-                                <form class="needs-validation" id="service" style="display: none">
+                                <form    th:action="@{/serviceOnHold}" method="post"   class="needs-validation" id="service" style="display: none">
                                     <div class="form-row align-items-center d-flex justify-content-center"  style="display: none">
                                         <div class="col-sm-3 my-1">
 
-                                            <input type="text" class="form-control" id="msiId" placeholder="Please Enter MSI"  required>
+                                            <input type="text" class="form-control" id="msiId"  name="msi" placeholder="Please Enter MSI"  required>
                                                 <!--<label class="form-controll" for="msiId">Msi</label>-->
                                         </div>
                                         <!-- 
@@ -413,6 +419,42 @@
 
                                 <!--___________________________________________________________________________________________________-->
 
+                                <form  
+
+                                    th:action="@{/serviceOnHoldBulk}" method="post"  enctype="multipart/form-data"
+                                    class="needs-validation" id="serviceBulk" style="display: none">
+                                    <div class="form-row align-items-center d-flex justify-content-center" >
+                                        <div class="col-sm-3 my-1">
+
+                                            <input type="file" class="custom-file-input " id="inputGroupFile02"  name="csv" required>
+                                                <label class="custom-file-label" for="inputGroupFile02">Choose file</label>
+                                        </div>
+                                        <!-- 
+                                                To make drop down menu in future  
+                                                
+                                                
+                                                
+                                                <div class="col-sm-3 my-1">
+                                                <label class="sr-only" for="inlineFormInputGroupUsername">Username</label>
+                                                <div class="input-group">
+                                                  <div class="input-group-prepend">
+                                                    <div class="input-group-text">@</div>
+                                                  </div>
+                                                  <input type="text" class="form-control" id="inlineFormInputGroupUsername" placeholder="Username">
+                                                </div>
+                                              </div>
+                                            
+                                            
+                                            
+                                        -->
+
+
+
+                                        <div class="col-auto my-1">
+                                            <button type="submit" class="btn btn-danger">Submit</button>
+                                        </div>
+                                    </div>
+                                </form>
 
 
 
@@ -424,8 +466,7 @@
 
 
 
-
- <!--___________________________________________________________________________________________________________________-->
+                                <!--___________________________________________________________________________________________________________________-->
 
 
                                 <form  
@@ -471,8 +512,6 @@
 
 
                                 <!--___________________________________________________________________________________________________-->
-                                
-                                
 
 
 
@@ -480,7 +519,9 @@
 
 
 
- <!--___________________________________________________________________________________________________________________-->
+
+
+                                <!--___________________________________________________________________________________________________________________-->
 
 
                                 <form  
@@ -529,8 +570,66 @@
 
 
 
+                                <form th:action="@{/activeService}" method="post"  class="needs-validation" id="activeService" style="display: none">
+                                    <div class="form-row align-items-center d-flex justify-content-center" >
+                                        <div class="col-sm-3 my-1">
+
+                                            <input type="text" class="form-control" id="coId" name="coId" placeholder="Please Enter Co ID"  required>
+                                                <!--<label class="form-controll" for="msiId">Msi</label>-->
+                                        </div>
+                                        <div class="col-sm-3 my-1">
+
+                                            <input type="text" class="form-control" id="snCode" name="snCode" placeholder="Please Enter SN Code"  required>
+                                                <!--<label class="form-controll" for="msiId">Msi</label>-->
+                                        </div>
 
 
+
+
+                                        <div class="col-auto my-1">
+                                            <button type="submit" class="btn btn-danger">Submit</button>
+                                        </div>
+                                    </div>
+                                </form>
+
+                                <!--   __________________________________________________________________________________________           -->
+
+                                <form  
+
+                                    th:action="@{/activateServiceBulk}" method="post"  enctype="multipart/form-data"
+                                    class="needs-validation" id="activeServicebulk" style="display: none">
+                                    <div class="form-row align-items-center d-flex justify-content-center" >
+                                        <div class="col-sm-3 my-1">
+
+                                            <input type="file" class="custom-file-input " id="inputGroupFile02"  name="csv" required>
+                                                <label class="custom-file-label" for="inputGroupFile02">Choose file</label>
+                                        </div>
+                                        <!-- 
+                                                To make drop down menu in future  
+                                                
+                                                
+                                                
+                                                <div class="col-sm-3 my-1">
+                                                <label class="sr-only" for="inlineFormInputGroupUsername">Username</label>
+                                                <div class="input-group">
+                                                  <div class="input-group-prepend">
+                                                    <div class="input-group-text">@</div>
+                                                  </div>
+                                                  <input type="text" class="form-control" id="inlineFormInputGroupUsername" placeholder="Username">
+                                                </div>
+                                              </div>
+                                            
+                                            
+                                            
+                                        -->
+
+
+
+                                        <div class="col-auto my-1">
+                                            <button type="submit" class="btn btn-danger">Submit</button>
+                                        </div>
+                                    </div>
+                                </form>
 
 
 

@@ -43,10 +43,64 @@
                                 </div>
 
 
+                                <!--        ______________________________________Original One_____________________________________        -->
+
+
+                                <div class="form-row align-items-center d-flex justify-content-center" th:if= "${consoleContentDeactivateServicebulk != null}">
+                                    <div class="col-sm-6 my-1" >
 
 
 
-                                <div class="form-row align-items-center d-flex justify-content-center">
+                                        <table
+
+
+
+
+
+
+
+                                            class="table table-sm  text-center ">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Co Id</th>
+                                                    <th scope="col">SN Code</th>
+                                                    <th scope="col">status</th>
+
+                                                    <th>
+
+                                                        <a class="btn btn-danger" th:href="@{home}" role="button">Go Back </a>
+
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+
+
+                                                <th:block th:each="bigContent : ${consoleContentDeactivateServicebulk}" >
+
+                                                    <tr th:each="content : ${bigContent}" >
+
+                                                        <td th:text="${content.coId}">A Smoke Test'</td>
+                                                        <td th:text="${content.snCode}">A Smoke Test'</td>
+                                                        <td th:text="${content.Response}">A Smoke Test'</td>
+
+                                                    </tr> 
+                                                </th:block>
+
+
+
+
+                                            </tbody>
+                                        </table>
+
+
+                                    </div>
+
+
+                                </div>
+                                <!--        ______________________________________Original One  Ending_____________________________________        -->
+
+                                <div class="form-row align-items-center d-flex justify-content-center" th:if= "${consoleContentDeactivateService != null}">
                                     <div class="col-sm-6 my-1" >
 
 
@@ -98,8 +152,6 @@
 
 
                                 </div>
-
-
 
 
 
