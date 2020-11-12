@@ -79,13 +79,19 @@
                                                     <br>
                                                         <h2>Oops! Something happened wrong &#128512;</h2>
                                                         <p>
-                                                                Please refer to automation team to investigate in logs .
+                                                                Please refer to automation team  for handle this error  
+                                                                <br>
+                                                                    <div>
+                                                                                   <h1 th:text="${error}">404</h1>
+
+                                                                    </div>
+                                                                    
                                                         </p>
                                                         
 
                                                         </h2>
                                                         <p>
-                                                            <a class="btn btn-danger" th:href="@{home}" role="button">Go Back </a>
+                                                            <a class="btn btn-danger" th:href="@{/}" role="button">Go Back </a>
 
                                                         </p>
 

@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-import oracle.net.nt.ConnOption;
+//import oracle.net.nt.ConnOption;
 import org.apache.log4j.Logger;
 
 /**
@@ -24,6 +24,7 @@ import org.apache.log4j.Logger;
  * @author V19MFoda
  */
 public class DataBase {
+
     static Logger logger = Logger.getLogger(DataBase.class.getName());
 
     public static String getCoId(String msi) {
@@ -48,8 +49,11 @@ public class DataBase {
             Class.forName("oracle.jdbc.driver.OracleDriver");
 
             con = DriverManager.getConnection(
-                    "jdbc:oracle:thin:@bscs-scan:1528/BSCSPRD2", "V19MFoda", "159357MOhame!@");
+//                                        "jdbc:oracle:thin:@bscs-scan:1528/BSCSPRD2","V19IAutomation1", "AutoSquad@12345_6789");
+                    "jdbc:oracle:thin:@10.230.91.144:1528/BSCSPRD2", "V19IAutomation1", "AutoSquad@12345_6789");
+//                    "jdbc:oracle:thin:@10.230.91.144:1528/BSCSPRD2", "V19MFoda", "159357MOhame!@");
 
+                    
             Statement stmt = con.createStatement();
 
             ResultSet rs = stmt.executeQuery("SELECT  --b.co_id \"Contract Id\" , f.tmcodeBilling\n"
@@ -106,7 +110,7 @@ public class DataBase {
             try {
                 con.close();
             } catch (SQLException ex) {
-                   logger.error("Error Happend " + ex.getMessage());
+                logger.error("Error Happend " + ex.getMessage());
             }
         }
         return CoId;
@@ -122,7 +126,7 @@ public class DataBase {
             Class.forName("oracle.jdbc.driver.OracleDriver");
 
             con = DriverManager.getConnection(
-                    "jdbc:oracle:thin:@bscs-scan:1528/BSCSPRD2", "V19MFoda", "159357MOhame!@");
+                    "jdbc:oracle:thin:@10.230.91.144:1528/BSCSPRD2", "V19IAutomation1", "AutoSquad@12345_6789");
 
             Statement stmt = con.createStatement();
 
@@ -132,15 +136,14 @@ public class DataBase {
             while (rs.next()) {
 //                for (int i = 1; i <= columnsNumber; i++) {
 
-                    String columnValue = rs.getString("STATUS");
-                    if (columnValue == "O") {
-                        flag = true;
-                    }
-                    break;
+                String columnValue = rs.getString("STATUS");
+                if (columnValue == "O") {
+                    flag = true;
                 }
+                break;
+            }
 
 //            }
-
 //step5 close the connection object  
             con.close();
 
@@ -155,7 +158,7 @@ public class DataBase {
             try {
                 con.close();
             } catch (SQLException ex) {
-                  logger.error("Error Happend " + ex.getMessage());
+                logger.error("Error Happend " + ex.getMessage());
             }
         }
 
@@ -172,7 +175,7 @@ public class DataBase {
             Class.forName("oracle.jdbc.driver.OracleDriver");
 
             con = DriverManager.getConnection(
-                    "jdbc:oracle:thin:@bscs-scan:1528/BSCSPRD2", "V19MFoda", "159357MOhame!@");
+                    "jdbc:oracle:thin:@10.230.91.144:1528/BSCSPRD2", "V19IAutomation1", "AutoSquad@12345_6789");
 
             Statement stmt = con.createStatement();
 
@@ -200,13 +203,13 @@ public class DataBase {
             try {
                 con.close();
             } catch (SQLException ex) {
-                   logger.error("Error Happend " + ex.getMessage());
+                logger.error("Error Happend " + ex.getMessage());
             }
         } finally {
             try {
                 con.close();
             } catch (SQLException ex) {
-                  logger.error("Error Happend " + ex.getMessage());
+                logger.error("Error Happend " + ex.getMessage());
             }
         }
 
