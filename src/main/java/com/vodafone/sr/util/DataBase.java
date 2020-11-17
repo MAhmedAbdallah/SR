@@ -49,11 +49,10 @@ public class DataBase {
             Class.forName("oracle.jdbc.driver.OracleDriver");
 
             con = DriverManager.getConnection(
-//                                        "jdbc:oracle:thin:@bscs-scan:1528/BSCSPRD2","V19IAutomation1", "AutoSquad@12345_6789");
+                    //                                        "jdbc:oracle:thin:@bscs-scan:1528/BSCSPRD2","V19IAutomation1", "AutoSquad@12345_6789");
                     "jdbc:oracle:thin:@10.230.91.144:1528/BSCSPRD2", "V19IAutomation1", "AutoSquad@12345_6789");
 //                    "jdbc:oracle:thin:@10.230.91.144:1528/BSCSPRD2", "V19MFoda", "159357MOhame!@");
 
-                    
             Statement stmt = con.createStatement();
 
             ResultSet rs = stmt.executeQuery("SELECT  --b.co_id \"Contract Id\" , f.tmcodeBilling\n"
@@ -215,14 +214,82 @@ public class DataBase {
 
         return servicesList;
     }
+//_______________________________________________________________________________________________________
 
+    public static String getMsisdn(String msi) {
+
+        Connection con = null;
+        String msisdn = "";
+        try {
+
+            Class.forName("oracle.jdbc.driver.OracleDriver");
+
+            con = DriverManager.getConnection(
+                    //                                        "jdbc:oracle:thin:@bscs-scan:1528/BSCSPRD2","V19IAutomation1", "AutoSquad@12345_6789");
+                   "jdbc:oracle:thin:@10.230.91.144:1528/BSCSPRD2", "V19IAutomation1", "AutoSquad@12345_6789");
+//                    "jdbc:oracle:thin:@10.230.91.144:1528/BSCSPRD2", "V19MFoda", "159357MOhame!@");
+            
+            Statement stmt = con.createStatement();
+
+            ResultSet rs = stmt.executeQuery("select\n"
+                    + " a.dn_num\n"
+                    + "from directory_number a,\n"
+                    + "  contr_services_cap b,\n"
+                    + "  contract_all c,\n"
+                    + "  rateplan d,\n"
+                    + "  customer_all e,\n"
+                    + "  port p,\n"
+                    + "  contr_devices cd,\n"
+                    + "  billcycle_assignment_history bah\n"
+                    + "where a.dn_id          = b.dn_id\n"
+                    + "and b.cs_deactiv_date is null\n"
+                    + "and b.co_id            = c.co_id\n"
+                    + "and d.tmcode           = c.tmcode\n"
+                    + "and c.customer_id      = e.customer_id\n"
+                    + "--AND a.dn_num IN ( '201006818120')\n"
+                    + "and   p.port_num='"+msi+"'\n"
+                    + "and p.port_id       =cd.port_id\n"
+                    + "and b.co_id         =cd.co_id\n"
+                    + "and bah.customer_id = e.customer_id\n"
+                    + "and bah.seqno       =\n"
+                    + "  (select max(seqno)\n"
+                    + "  from billcycle_assignment_history\n"
+                    + "  where customer_id =e.customer_id\n"
+                    + "  )\n"
+                    + "and cd.cd_deactiv_date is null "
+            );
+
+            while (rs.next()) {
+                //  System.out.println(rs.getInt("Contract Id"));
+                msisdn = String.valueOf(rs.getString("DN_NUM"));
+            }
+
+//step5 close the connection object  
+            con.close();
+
+        } catch (Exception e) {
+            System.out.println(e);
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                logger.error("Error Happend " + ex.getMessage());
+            }
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                logger.error("Error Happend " + ex.getMessage());
+            }
+        }
+        return msisdn;
+    }
+
+//    __________________________________________________________________________________________________________
     public static void main(String[] args) {
 
-        System.out.println(getCoId("01030003477"));
-        System.out.println(checkPendingRequest(getCoId("01030003477")));
-        for (Service s : getAllServices(getCoId("01030003477"))) {
-            System.out.println(s.getSNCode() + "  ----------------->   " + s.getStatus());
+        System.out.println(getMsisdn("602022042807201"));
+        
         }
-    }
+    
 
 }

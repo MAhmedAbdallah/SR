@@ -14,6 +14,7 @@ import com.vodafone.sr.model.User;
 import com.vodafone.sr.model.cancelContractModal;
 import com.vodafone.sr.util.DataBase;
 import java.io.BufferedReader;
+import java.io.File;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,9 @@ import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
@@ -47,6 +51,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.hibernate.boot.model.relational.Database;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -143,6 +148,16 @@ public class MainController {
     public String getconsoleDeactivateService() {
         if (request.getSession().getAttribute("userName") != null) {
             return "deactivateservicebulkconsole";
+        } else {
+            request.setAttribute("message", "Please Login ");
+            return "index";
+        }
+    }
+
+    @RequestMapping("acivatevolteconsole")
+    public String getAcivateVolteConsole() {
+        if (request.getSession().getAttribute("userName") != null) {
+            return "acivatevolteconsole";
         } else {
             request.setAttribute("message", "Please Login ");
             return "index";
@@ -859,14 +874,33 @@ public class MainController {
 
                 //   String msi = "";
                 List<PortModel> consoleList = new ArrayList<PortModel>();
-
+                List<ActivateVolte> volteList = new ArrayList<ActivateVolte>();
                 try {
                     List<String> list = new ArrayList<String>();
-                    List<ActivateVolte> volteList = new ArrayList<ActivateVolte>();
+
                     HashSet<String> callfilterationSet = new HashSet<String>();
                     HashSet<String> rbtSet = new HashSet<String>();
 //                    __________________________________________________________________________
-                    BufferedReader callFilterBufReader = new BufferedReader(new FileReader("D:\\Volte Activation\\Call Filtration.txt"));
+
+                    String[] pathnames;
+
+                    File f = new File("/automation/volte_dump_validation");
+
+                    pathnames = f.list();
+                    String CallfilterationName = "";
+                    String rbtName = "";
+                    for (String pathname : pathnames) {
+               //         System.out.println(pathname);
+                        if (pathname.contains("Call")) {
+                            CallfilterationName = pathname;
+                        }
+                        if (pathname.contains("RBT")) {
+
+                            rbtName = pathname;
+                        }
+                    }
+//    /automation/volte_dump_validation/
+                    BufferedReader callFilterBufReader = new BufferedReader(new FileReader("/automation/volte_dump_validation/" + CallfilterationName));
 
                     String line = callFilterBufReader.readLine();
                     while (line != null) {
@@ -876,11 +910,11 @@ public class MainController {
                     callFilterBufReader.close();
 
 //                    _________________________________________________________________________
-                    BufferedReader rbtBufReader = new BufferedReader(new FileReader("D:\\Volte Activation\\RBT.txt"));
+                    BufferedReader rbtBufReader = new BufferedReader(new FileReader("/automation/volte_dump_validation/" + rbtName));
 
                     line = rbtBufReader.readLine();
                     while (line != null) {
-                        rbtSet.add(line);
+                        rbtSet.add(DataBase.getMsisdn(line));
                         line = rbtBufReader.readLine();
                     }
                     rbtBufReader.close();
@@ -888,8 +922,9 @@ public class MainController {
 //                    _________________________________________________________________________
                     FileInputStream fis = (FileInputStream) csv.getInputStream();
                     list = readExcel(fis);
+                    List<String> postRBT = new ArrayList<String>();
                     for (int i = 0; i < list.size(); i++) {
-                        System.out.println(list.get(i));
+                        //   System.out.println(list.get(i));
                         volteList.add(new ActivateVolte(list.get(i), ""));
 
                         //  System.out.println(callfilterationSet.size());
@@ -899,27 +934,46 @@ public class MainController {
                     for (int i = 0; i < volteList.size(); i++) {
                         //System.out.println(list.get(i));
                         if (callfilterationSet.contains(volteList.get(i).getMsisdn())) {
-                            volteList.get(i).setMessage("This MSISDN Has Call Filteration");
+                            volteList.get(i).setMessage("This MSISDN Has Call Filteration or RBT");
+                            continue;
                         }
-                        continue;
-                        
+                        if (rbtSet.contains(volteList.get(i).getMsisdn())) {
+                            postRBT.add(volteList.get(i).getMsisdn());
+                        }
+                        String CoId = DataBase.getCoId(volteList.get(i).getMsisdn());
+                        String Url = "http://10.230.91.39:7001/CMS_HTTP_TEST/DoSimpleRequest?username=TEBCO&password=SY&workflowName=WriteCustomerContractServicesSimpleDN&CO_ID="
+                                + CoId + "&COS_PENDING_STATUS=2&SNCODE=3229&SPCODE=31";
+//       try {
+                        String response = invokeWebService(Url); //"Contract Canceled"; //
+                        volteList.get(i).setMessage(response);
+
+                        //Here add Database tibco;
+                        logger.info("Activate Volte Service Bulk By :" + request.getSession().getAttribute("userName") + " For msisdn : " + volteList.get(i).getMsisdn());
+
+                        if (i % 10 == 0) {
+                            Thread.sleep(10000);
+                        }
 
                     }
-
 //                      ___________________For Loop fo Testing_________________________
-                    for (int i = 0; i < volteList.size(); i++) {
-                        System.out.println("MSI = " + volteList.get(i).getMsisdn() + " Message = " + volteList.get(i).getMessage());
+//                    for (int i = 0; i < volteList.size(); i++) {
+//                        System.out.println("MSI = " + volteList.get(i).getMsisdn() + " Message = " + volteList.get(i).getMessage());
+//                        System.out.println(callfilterationSet.size() + "   " + rbtSet.size());
+//
+//                    }
 
-                    }
+                    Path callFilterationTemp = Files.move(Paths.get("/automation/volte_dump_validation/" + CallfilterationName),
+                            Paths.get("/automation/volte_dump_validation/Done/" + CallfilterationName));
+                    Path rbtTemp = Files.move(Paths.get("/automation/volte_dump_validation/" + rbtName),
+                            Paths.get("/automation/volte_dump_validation/Done/" + rbtName));
 
-                    // logger.info("Port Out Bulk By :" + request.getSession().getAttribute("userName"));
                 } catch (Exception e) {
                     //  e.printStackTrace();
                     logger.error("Error Happend " + e.getMessage());
                 }
-                request.setAttribute("consoleContent", consoleList);
+                request.setAttribute("consoleContent", volteList);
 
-                return "forward:/console";
+                return "forward:/acivatevolteconsole";
             }
         }
     }
