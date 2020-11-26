@@ -950,9 +950,9 @@ public class MainController {
                         //Here add Database tibco;
                         logger.info("Activate Volte Service Bulk By :" + request.getSession().getAttribute("userName") + " For msisdn : " + volteList.get(i).getMsisdn());
 
-                        if (i % 10 == 0) {
-                            Thread.sleep(10000);
-                        }
+                      
+                            Thread.sleep(1000);
+                      
 
                     }
 //                      ___________________For Loop fo Testing_________________________
