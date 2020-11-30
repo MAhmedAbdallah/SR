@@ -12,7 +12,9 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -226,9 +228,9 @@ public class DataBase {
 
             con = DriverManager.getConnection(
                     //                                        "jdbc:oracle:thin:@bscs-scan:1528/BSCSPRD2","V19IAutomation1", "AutoSquad@12345_6789");
-                   "jdbc:oracle:thin:@10.230.91.144:1528/BSCSPRD2", "V19IAutomation1", "AutoSquad@12345_6789");
+                    "jdbc:oracle:thin:@10.230.91.144:1528/BSCSPRD2", "V19IAutomation1", "AutoSquad@12345_6789");
 //                    "jdbc:oracle:thin:@10.230.91.144:1528/BSCSPRD2", "V19MFoda", "159357MOhame!@");
-            
+
             Statement stmt = con.createStatement();
 
             ResultSet rs = stmt.executeQuery("select\n"
@@ -247,7 +249,7 @@ public class DataBase {
                     + "and d.tmcode           = c.tmcode\n"
                     + "and c.customer_id      = e.customer_id\n"
                     + "--AND a.dn_num IN ( '201006818120')\n"
-                    + "and   p.port_num='"+msi+"'\n"
+                    + "and   p.port_num='" + msi + "'\n"
                     + "and p.port_id       =cd.port_id\n"
                     + "and b.co_id         =cd.co_id\n"
                     + "and bah.customer_id = e.customer_id\n"
@@ -287,9 +289,14 @@ public class DataBase {
 //    __________________________________________________________________________________________________________
     public static void main(String[] args) {
 
-        System.out.println(getMsisdn("602022042807201"));
-        
-        }
-    
+        // System.out.println(getMsisdn("602022042807201"));
+        String pattern = "dd-MM-yyyy";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        String date = simpleDateFormat.format(new Date());
+        System.out.println(date);
+
+       
+
+    }
 
 }

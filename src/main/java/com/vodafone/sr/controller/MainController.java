@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -36,7 +37,9 @@ import java.nio.file.Paths;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -872,6 +875,17 @@ public class MainController {
                 return "index";
             } else {
 
+                String pattern = "dd-MM-yyyy";
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+                String date = simpleDateFormat.format(new Date());
+                //   System.out.println(date);
+
+                XSSFWorkbook workbook = new XSSFWorkbook();
+                XSSFSheet sheet = workbook.createSheet("RBT Existing");
+
+                XSSFWorkbook outputWorkbook = new XSSFWorkbook();
+                XSSFSheet outputSheet = outputWorkbook.createSheet("OutPut");
+
                 //   String msi = "";
                 List<PortModel> consoleList = new ArrayList<PortModel>();
                 List<ActivateVolte> volteList = new ArrayList<ActivateVolte>();
@@ -890,7 +904,7 @@ public class MainController {
                     String CallfilterationName = "";
                     String rbtName = "";
                     for (String pathname : pathnames) {
-               //         System.out.println(pathname);
+                        //         System.out.println(pathname);
                         if (pathname.contains("Call")) {
                             CallfilterationName = pathname;
                         }
@@ -914,6 +928,7 @@ public class MainController {
 
                     line = rbtBufReader.readLine();
                     while (line != null) {
+                        // Henaaaaa
                         rbtSet.add(DataBase.getMsisdn(line));
                         line = rbtBufReader.readLine();
                     }
@@ -925,6 +940,7 @@ public class MainController {
                     List<String> postRBT = new ArrayList<String>();
                     for (int i = 0; i < list.size(); i++) {
                         //   System.out.println(list.get(i));
+                        //add paramter for msi hena btgib l value mn l DButil Class
                         volteList.add(new ActivateVolte(list.get(i), ""));
 
                         //  System.out.println(callfilterationSet.size());
@@ -947,25 +963,64 @@ public class MainController {
                         String response = invokeWebService(Url); //"Contract Canceled"; //
                         volteList.get(i).setMessage(response);
 
+//____________________________________________________________________________________
                         //Here add Database tibco;
+//____________________________________________________________________________________
                         logger.info("Activate Volte Service Bulk By :" + request.getSession().getAttribute("userName") + " For msisdn : " + volteList.get(i).getMsisdn());
 
-                      
-                            Thread.sleep(1000);
-                      
+                        Thread.sleep(1000);
 
                     }
+
+                    for (int i = 0; i < postRBT.size(); i++) {
+
+                        Row row = sheet.createRow(i);
+
+                        int columnCount = 0;
+                        Cell cell = row.createCell(0);
+
+                        if (postRBT.get(i) instanceof String) {
+                            cell.setCellValue((String) postRBT.get(i));
+                        }
+
+                    }
+
+                    FileOutputStream outputStream = new FileOutputStream("/home/ITAutomation/Fouda/FrontLine-Billing/Done_Volte_Activation_Bulk/Non_Tibco_Queried_" + date + ".xlsx");
+                    workbook.write(outputStream);
+
+//                    __________________________________________________________________________
+                    for (int i = 0; i < volteList.size(); i++) {
+                        ActivateVolte x = volteList.get(i);
+                            Row row = outputSheet.createRow(i);
+
+                            int columnCount = 0;
+
+                           
+                                Cell cell0 = row.createCell(columnCount);
+                                
+                                    cell0.setCellValue((String) x.getMsisdn());
+                                    
+                                     Cell cell1 = row.createCell(++columnCount);
+                                        cell1.setCellValue((String) x.getMessage());
+                                
+                            }
+                  FileOutputStream outputStream1 = new FileOutputStream("/home/ITAutomation/Fouda/FrontLine-Billing/Done_Volte_Activation_Bulk/OutPut_" + date + ".xlsx");
+                    outputWorkbook.write(outputStream1);    
+
+                        
+                    
+
+//____________________________________________________________________________________
 //                      ___________________For Loop fo Testing_________________________
 //                    for (int i = 0; i < volteList.size(); i++) {
 //                        System.out.println("MSI = " + volteList.get(i).getMsisdn() + " Message = " + volteList.get(i).getMessage());
 //                        System.out.println(callfilterationSet.size() + "   " + rbtSet.size());
 //
 //                    }
-
                     Path callFilterationTemp = Files.move(Paths.get("/automation/volte_dump_validation/" + CallfilterationName),
-                            Paths.get("/automation/volte_dump_validation/Done/" + CallfilterationName));
+                            Paths.get("/home/ITAutomation/Fouda/FrontLine-Billing/Done_Volte_Activation_Bulk/" + CallfilterationName));
                     Path rbtTemp = Files.move(Paths.get("/automation/volte_dump_validation/" + rbtName),
-                            Paths.get("/automation/volte_dump_validation/Done/" + rbtName));
+                            Paths.get("/home/ITAutomation/Fouda/FrontLine-Billing/Done_Volte_Activation_Bulk/" + rbtName));
 
                 } catch (Exception e) {
                     //  e.printStackTrace();
