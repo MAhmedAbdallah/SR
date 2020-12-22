@@ -13,12 +13,26 @@ public class ActivateVolte {
     
     private String msisdn;
     private String message;
+    private String msi;
 
-    public ActivateVolte(String msisdn, String message) {
+    public ActivateVolte(String msisdn, String message, String msi) {
         this.msisdn = msisdn;
         this.message = message;
+        this.msi = msi;
     }
 
+    
+    
+    
+    public String getMsi() {
+        return msi;
+    }
+
+    public void setMsi(String msi) {
+        this.msi = msi;
+    }
+
+    
     public String getMsisdn() {
         return msisdn;
     }
